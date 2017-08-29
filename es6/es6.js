@@ -171,3 +171,128 @@ Object.assign({b:'c'},
 );
 
 Object.assign({a:'b'}, {[Symbol('c')]:'d'})
+//Object.assign浅复制
+
+class point {
+	constructor(x,y){
+		Object.assign(this, {x,y})
+	}
+}
+
+var po = new point(1,2);
+
+//为对象添加方法
+function SomeClass(){};
+Object.assign(SomeClass.prototype, {
+	someMethod(arg1, arg2){
+
+	},
+	anotherMethod(){
+
+	}
+});
+
+function clone(origin){
+	return Object.assign({}, origin);
+}
+
+function clone(origin){
+	let originProto = Object.getPrototypeOf(origin);
+	return Object.assign(Object.create(originProto), origin);
+}
+
+//合并多个对象
+const merge1 = (target, ...sources) => Object.assign(target, ...sources);
+const merge2 = (...sources) => Object.assign({}, ...sources);
+
+//为属性指定默认值
+const DEFAULTS = {
+	logLevel:0,
+	outputFormat:'html'
+}
+
+var oo = {};
+
+function processContent(options){
+	options = Object.assign({}, DEFAULTS, options);
+	console.log(options);
+}
+//processContent(oo);
+
+//属性的可枚举性和遍历
+//可枚举性
+let obj6 = {foo:123};
+Object.getOwnPropertyDescriptor(obj6, 'foo')
+
+/*
+目前有四个操作会忽略enumerable为false的属性
+for...in循环：只遍历对象自身的和继承的可枚举的属性
+Object.keys()：返回对自身的所有可枚举的属性的键名
+JSON.stringify():只串化对象自身的可枚举的属性。
+Object.assign()忽略enumerable为false的属性，只拷贝对象自身的可枚举的属性
+*/
+Object.getOwnPropertyDescriptor(Object.prototype, 'toString').enumerable;
+
+Object.getOwnPropertyDescriptor([], 'length').enumerable;
+
+
+//ES6规定，所有Class的原型的方法都是不可枚举的
+
+Object.getOwnPropertyDescriptor(class{foo(){}}.prototype, 'foo').enumerable;
+
+/*
+属性的遍历
+ES6一共有5中方法可以遍历对象的属性
+1.for...in
+for...in循环遍历对象自身的和继承的可枚举属性（不含Symbol属性）
+2.Object.keys(obj)
+object.keys返回一个数组，包括对象自身的（不含继承的）所有可枚举属性（不含Symbol属性）
+3.Object.getOwnPropertyNames(obj)
+Object.getOwnPropertyNames返回一个数组，包含对象自身的所有属性（不含Symbol属性，但是包含不可枚举属性）
+4.Object.getOwnPropertySymbols(obj)
+Object.getOwnPropertySymbols返回一个数组，包含对象自身的所有Symbol属性
+5.Reflect.ownKeys(obj)
+Reflect.ownKeys返回一个数组，包含对象自身的所有属性，不管属性名是Symbol或字符串，也不管是否可枚举。
+以上5中方法遍历对象的属性，都遵守同样的 属性遍历的次序规则
+-首先遍历所有书名为数值的属性，按照数字排序
+-其次遍历所有属性名为字符串的属性，按照生成时间排序
+-最后遍历所有属性名为Symbol值得属性，按照生成时间排序
+
+
+*/
+Reflect.ownKeys({[Symbol()]:0, b:0, 10:0, 2:0, a:0});
+
+//7.Object.getOwnPropertyDescriptors();
+
+const obj7 = {
+	foo:123,
+	get bar(){return 'abc'}
+}
+Object.getOwnPropertyDescriptors(obj7);
+
+
+function getOwnPropertyDescriptors(obj){
+	const result = {}
+	for(let key of Reflect.ownKeys(obj)){
+		result[key]=Object.getOwnPropertyDescriptor(obj, key)
+	}
+	return result;
+}
+
+const source = {
+	set foo(value){
+		console.log(value);
+	}
+};
+const target1 = {};
+Object.assign(target1, source);
+Object.getOwnPropertyDescriptor(target1, 'foo')
+
+const target2 = {}
+Object.defineProperties(target2, Object.getOwnPropertyDescriptors(source))
+Object.getOwnPropertyDescriptor(target2, 'foo')
+
+const shalloMerge = (target, source) => Object.defineProperties(
+	target,
+	Object.getOwnPropertyDescriptors(source)
+)
