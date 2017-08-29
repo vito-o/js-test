@@ -193,7 +193,7 @@ var o = Object.seal(
 	)
 )
 for(prop in o){
-	console.log(prop);
+	//console.log(prop);
 }
 
 /*
@@ -203,5 +203,21 @@ JSON.stringify()和JSON.parse()用来序列化和还有js对象
 var o = {x:1, y:{z:[false, null, '']}};
 var s = JSON.stringify(o);
 var p = JSON.parse(s);
-console.log(s)
-console.log(p)
+//console.log(s)
+//console.log(p)
+
+
+
+
+/*********************数组*************************/
+//数组直接量中的值不一定要是常量
+/*
+数组允许有可选的结尾的逗号，故[,,]只有两个元素而非三个
+*/
+var base = 1024;
+var table = [base, base+1, base+2, base+3];
+
+var a1 = [,];
+var a2 = [undefined];
+console.log(0 in a1);
+console.log(0 in a2);
