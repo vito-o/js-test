@@ -296,3 +296,139 @@ const shalloMerge = (target, source) => Object.defineProperties(
 	target,
 	Object.getOwnPropertyDescriptors(source)
 )
+
+//Object.getOwnPropertyDescriptors方法的另一个用处，是配合Object.create方法，将对象属性克隆岛一个新对象
+const clone1 = Object.create(Object.getPrototypeOf(obj7),Object.getOwnPropertyDescriptors(obj7));
+
+const shallowClone = (obj) => Object.create(Object.getPrototypeOf(obj7),Object.getOwnPropertyDescriptors(obj));
+
+
+var prot = {aaa:'123'}
+const obj8 = Object.assign(
+	Object.create(prot),
+	{foo:123}
+)
+
+const obj9 = Object.create(
+	prot,
+	Object.getOwnPropertyDescriptors({
+		foo:123
+	})
+)
+
+let mix = (object) => ({
+	with:(...mixins) => mixins.reduce(
+		(c, mixin) => Object.create(
+			c, Object.getOwnPropertyDescriptors(mixin)
+		), object)
+})
+
+var mix1 = function mix(object) {
+	return {
+		with: function _with() {
+			for (var _len = arguments.length, mixins = Array(_len), _key = 0; _key < _len; _key++) {
+				mixins[_key] = arguments[_key];
+			}
+
+			return mixins.reduce(function (c, mixin) {
+				return Object.create(c, Object.getOwnPropertyDescriptors(mixin));
+			}, object);
+		}
+	};
+};
+let a1 = {a:'a'}
+let b1 = {b:'b'}
+let c1 = {c:'c'}
+let d1 = mix(c1).with(a1,b1);
+let d2 = mix1(c1).with(a1,b1);
+
+//__proto__属性,Object.setPrototypeOf(), Object.getPrototypeOf();
+//__proto__属性,所有浏览器（包括IE11）都部署了这个属性
+
+var someOtherObj = d1;
+
+var obj10 = {
+	method:function(){}
+}
+obj10.__proto__ = someOtherObj;
+
+Object.defineProperty(Object.prototype, '__proto__', {
+	get(){
+		let _thisObj = Object(this);
+		return Object.getPrototypeOf(_thisObj)
+	},
+	set(proto){
+		if(this === undefined || this === null){
+			throw new TypeError();
+		}
+		if(!isObject(this)){
+			return undefined;
+		}
+		if(!isObject(proto)){
+			return undefined;
+		}
+		let status = Reflect.setPrototypeOf(this, proto);
+		if(!status){
+			throw new TypeError()
+		}
+
+	}
+});
+function isObject(value){
+	return Object(value) === value;
+}
+
+//Object.setPrototypeOf();
+var obj11 = Object.setPrototypeOf({}, null);
+
+let proto = {}
+let obj12 = {x:10}
+Object.setPrototypeOf(obj12, proto);
+proto.y = 20;
+proto.z = 40;
+
+
+function Retangle(){
+	() => null,
+	this.val = 'rest';
+}
+var rec = new Retangle();
+Object.getPrototypeOf(rec) === Retangle.prototype;
+
+Object.setPrototypeOf(rec, Object.prototype);
+Object.getPrototypeOf(rec) === Retangle.prototype;
+
+
+//Object.keys(),Object.values(),object.entries()
+
+var obj13 = {foo:'bar', baz:42}
+Object.keys(obj13);
+let {keys, values, entries} = Object;
+let obj14 = {a:1, b:2, c:3}
+for(let key of keys(obj14)){
+	//console.log(key);
+}
+for(let value of values(obj14)){
+	//console.log(value);
+}
+for(let [key, value] of entries(obj14)){
+	//console.log([key, value]);
+}
+
+//Object.values方法返回一个数组，成员是参数对象自身（不含继承的）所有可遍历（enumerable）属性的键值
+var obj15 = Object.create({}, {
+	p:{
+		value:42,
+		enumerable:true
+	}
+})
+Object.values(obj15);
+
+
+function* entries1(obj){
+	for(let key of Object.keys(obj)){
+		return yield [key, obj[key]];
+	}
+}
+
+console.log(entries1(obj15));
