@@ -22,7 +22,7 @@ var Person = {
 	name:'张三',
 	birth,
 	hello(){
-		console.log('my name is', this.name);
+		//console.log('my name is', this.name);
 	}
 
 }
@@ -101,7 +101,7 @@ const myObject = {
 //方法的name属性
 const person = {
 	sayName(){
-		console.log('hello!');
+		//console.log('hello!');
 	}
 }
 
@@ -215,7 +215,7 @@ var oo = {};
 
 function processContent(options){
 	options = Object.assign({}, DEFAULTS, options);
-	console.log(options);
+	//console.log(options);
 }
 //processContent(oo);
 
@@ -431,4 +431,260 @@ function* entries1(obj){
 	}
 }
 
-console.log(entries1(obj15));
+//console.log(entries1(obj15));
+
+//Symbol值通过Symbol函数生成，对象的属性名现在可以有两种类型、一种是原来就有的字符串，另一种就是
+//新增的Symbol类型。独一无二的，
+let s = Symbol(); //是原始类型的值，不是对象，不能添加属性
+//console.log(s);
+
+let s1 = Symbol('foo');
+let s2 = Symbol('bar');
+//console.log(s1.toString())
+//console.log(s2.toString())
+
+var obj16 = {
+	toString(){
+		return 'abc';
+	}
+}
+
+const sym = Symbol(obj16);
+//console.log(sym);
+
+var s3 = Symbol();
+var s4 = Symbol();
+//console.log(s3 == s4);
+
+//Symbol不能与其他类型的值进行运算，会报错
+//symbol值可以转为布尔值，但不能转为数值
+//console.log(Boolean(sym))
+//console.log(!sym)
+
+var mySymbol = Symbol();
+
+var a = {}
+a[mySymbol] = 'Hello!';
+
+var b = {
+	[mySymbol]:'hello'
+}
+var c = {}
+Object.defineProperty(c, mySymbol, {value:'hello'});
+
+//console.log(a[mySymbol]);
+//console.log(b[mySymbol]);
+//console.log(c[mySymbol]);
+
+//点运算符后面总是字符串，所以不会读取mySymbol作为标识名所知带的那个值，导致a的属性名实际上是一个字符串，而不是一个Symbol值
+
+let obj17 = {
+	[s](arg){console.log(arg)}
+}
+
+//console.log(obj17[s](123));
+
+const COLOR_RED   = Symbol();
+const COLOR_GREEN = Symbol();
+
+function getComplement(color){
+	switch(color){
+		case COLOR_RED:
+		 	return COLOR_GREEN;
+		case COLOR_GREEN:
+			return COLOR_RED;
+		default:
+			throw new Error('Undefined color');
+	}
+}
+
+function getArea(shape, options){
+	var area = 0
+	switch(shape){
+		case 'Triangle':
+			area = 0.5 * options.width * options.height;
+			break;
+	}
+	//console.log(area)
+	return area;
+}
+
+//getArea('Triangle', { width: 100, height: 100 });
+
+var shapeType = {
+	triangle:Symbol()
+};
+
+function getArea(shape, options){
+	var area = 0;
+	switch(shape){
+		case shapeType.triangle:
+			area = .5 * options.width * options.height;
+			break;
+	}
+	//console.log(area)
+	return area;
+}
+
+getArea(shapeType.triangle, {width:100, height:100});
+
+//属性名的遍历
+var obj18 = {}
+obj18[s1] = 'Hello';
+obj18[s2] = 'World';
+var objectSymbols = Object.getOwnPropertySymbols(obj18)
+//console.log(objectSymbols);
+
+var obj19 = {}
+var foo = Symbol('foo');
+Object.defineProperty(obj19, foo, {value:'foobar'});
+for(var i in obj19){
+	console.log(i)
+}
+//console.log(Object.getOwnPropertyNames(obj19))
+//console.log(Object.getOwnPropertySymbols(obj19))
+
+let obj20 = {
+	[Symbol('my_key')]:1,
+	enum:2,
+	nonEnum:3
+}
+
+//console.log(Reflect.ownKeys(obj20));
+var size = Symbol('size');
+
+class Collection {
+	constructor(){
+		this[size] = 0;
+	}
+
+	add(item){
+		console.log(size);
+		console.log(this[size]);
+		console.log(this[this[size]]);
+		this[this[size]] = item;
+		this[size]++;
+	}
+
+	static sizeOf(instance){
+		return instance[size];
+	}
+}
+
+var x = new Collection();
+Collection.sizeOf(x);
+//x.add('foo')
+//console.log(Collection.sizeOf(x));
+
+//console.log(Object.keys(x));
+//console.log(Object.getOwnPropertyNames(x));
+//console.log(Object.getOwnPropertySymbols(x))
+
+//Symbol.for(),Symbol.keyFor()
+
+//实例：模块的Singleton模式
+//Singleton模式值得是调用一个类，任何时候返回都是同一个实例
+//对于Node来说、模块文件可以看成一个类
+
+
+class MyClass {
+	[Symbol.hasInstance](foo){
+		return foo instanceof Array;
+	}
+}
+
+//console.log([1,2,3] instanceof new MyClass());
+
+class Even{
+	static [Symbol.hasInstance](obj){
+		return Number(obj) % 2 === 0;
+	}
+}
+
+//console.log(1 instanceof Even);
+//console.log(2 instanceof Even);
+//console.log(12345 instanceof Even);
+
+//Symbol.isConcatSpreadable
+var arr1 = ['c', 'd'];
+//console.log(['a', 'b'].concat(arr1, 'e'));
+//console.log(arr1[Symbol.isConcatSpreadable]);
+
+let arr2 = ['c', 'd'];
+arr2[Symbol.isConcatSpreadable] = false;
+//console.log(['a', 'b'].concat(arr2,'e'))
+
+class A1 extends Array{
+	constructor(args){
+		super(args);;
+		this[Symbol.isConcatSpreadable] = true;
+	}
+}
+
+class A2 extends Array{
+	constructor(args){
+		super(args)
+	}
+	get[Symbol.isConcatSpreadable](){
+		return false;
+	}
+}
+
+let aa1 = new A1();
+aa1[0] = 3;
+aa1[1] = 4;
+let aa2 = new A2();
+aa2[0] = 5;
+aa2[1] = 6;
+//console.log([1,2].concat(aa1).concat(aa2))
+
+//Symbol.species
+//Symbol.species属性，指向当前对象的构造函数。创造实例时，默认会调用这个方法，及时用这个属性返回的函数当做构造函数
+class MyArray1 extends Array{
+	static get [Symbol.species](){return Array;}
+}
+
+class MySplitter {
+	constructor(value){
+		this.value = value;
+	}
+
+	[Symbol.split](string){
+		var index = string.indexOf(this.value);
+		if(index === -1){
+			return string;
+		}
+
+		return [
+			string.substr(0, index),
+			string.substr(index + this.value.length)
+		]
+	}
+}
+
+//Symbol.iterator
+var myIterable = {}
+myIterable[Symbol.iterator] = function*(){
+	yield 1;
+	yield 2;
+	yield 3;
+}
+//console.log([...myIterable]);
+
+class Collection1{
+	*[Symbol.iterator](){
+		let i = 0;
+		while(this[i] !== undefined){
+			yield this[i];
+			++i;
+		}
+	}
+}
+
+let myCollection = new Collection1();
+myCollection[0] = 1;
+myCollection[1] = 2;
+
+for(let value of myCollection){
+	console.log(value)
+}

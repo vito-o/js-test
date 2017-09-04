@@ -693,7 +693,7 @@
             return name ?
                 jQuery.cache[id][name] :
                 id;
-        },
+        }
 
         removeData: function(elem, name) {
             elem = elem == window ?
