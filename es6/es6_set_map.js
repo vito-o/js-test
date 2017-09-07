@@ -253,8 +253,257 @@ const set11 = new Set([
 	['bar', 2]
 ]);
 
-const m1 = new Map(set11)
-console.log(m1.get('foo'))
-const m2 = new Map([['bar',3]]);
-const m3 = new Map(m2);
-console.log(m3.get('bar'))
+// const m1 = new Map(set11)
+// console.log(m1.get('foo'))
+// const m2 = new Map([['bar',3]]);
+// const m3 = new Map(m2);
+// console.log(m3.get('bar'))
+
+//如果对同一个键多次赋值，后面的值将覆盖前面的值/如果读取一个未知的键，则返回undefined。
+//注意，只有同一个对象的引用，map解构才将其视为同一个键。这一点非常小心
+const map2 = new Map()
+map2.set(1,'aaa').set(1,'bbb');
+//console.log(map2);
+
+const map3 = new Map()
+map.set(['a'], 555);
+//console.log(map.get(['a']))
+
+const map4 = new Map();
+const k1 = ['a']
+const k2 = ['a']
+map4.set(k1,111).set(k2,222)
+
+// console.log(map4.get(k1))
+// console.log(map4.get(k2))
+let map5 = new Map()
+map5.set(-0, 123)
+// console.log(map5.get(+0))
+
+map5.set(true, 1)
+map5.set('true', 2)
+// console.log(map5.get(true))
+
+map5.set(undefined, 3)
+map5.set(null, 4)
+// console.log(map5.get(undefined))
+// console.log(map5)
+
+map5.set(NaN, 123)
+// console.log(map5.get(NaN))
+
+//实例的属性和操作方法
+//1.size属性
+//console.log(map5.size)
+const map6 = new Map()
+map6.set('edition', 6)
+map6.set(262, 'standard')
+map6.set(undefined, 'nah')
+// console.log(map6.get(undefined));
+// console.log(map6.has(undefined))
+// console.log(map6.delete(undefined))
+// console.log(map6.clear())
+// console.log(map6)
+
+
+const map7 = new Map([
+	['F','no'],
+	['T','yes']
+])
+
+for(let key of map7.keys()){
+	//console.log(key)
+}
+
+for(let key of map7.values()){
+	//console.log(key)
+}
+
+for(let item of map7.entries()){
+	//console.log(item[0], item[1])
+}
+
+for(let [key, value] of map7.entries()){
+	//console.log(key, value);
+}
+
+for(let [key, value] of map7){
+	//console.log(key, value)
+}
+
+//console.log(map7[Symbol.iterator] == map7.entries)
+
+const map8 = new Map([
+	[1, 'one'],
+	[2, 'two'],
+	[3, 'three']
+])
+
+//console.log([...map8]);
+//console.log([...map8.keys()])
+//console.log([...map8.values()])
+//console.log([...map8.entries()])
+
+//结合数字的map方法、filter方法，可以实现map的遍历和过滤（MAP本身没有map和filter方法）
+const map9 = new Map()
+.set(1,'a')
+.set(2,'b')
+.set(3,'c')
+
+const map10 = new Map(
+	[...map9].filter(([k,v]) => k<3)
+)
+
+//console.log(map10)
+
+const map11 = new Map(
+	[...map9].map(([k,v])=>[k*2, '_'+v])
+)
+//console.log(map11);
+
+map11.forEach(function(value, key, map){
+	//console.log('Key: %s, Value: %s', key ,value);
+});
+
+const reporter = {
+	report:function(key, value){
+		//console.log('Key:%s, Value:%s', key, value)
+	}
+}
+
+map11.forEach(function(value,key,map){
+	this.report(key, value);
+}, reporter)
+
+//与其他数据结构的互相转换
+//1.map转为数组
+const myMap = new Map().set(true,7).set({foo:3},['abc'])
+//console.log([...myMap])
+
+//数组转为map
+// console.log(new Map([
+// 	[true, 7],
+// 	[{foo:3}, ['abc']]
+// ]))
+
+//map转为对象
+function strMapToObject(strMap){
+	let obj = Object.create(null);
+	for(let [k, v] of strMap){
+		obj[k] = v;
+	}
+	return obj;
+}
+
+const myMap1 = new Map().set('yes', true).set('no', false);
+//console.log(strMapToObject(myMap1))
+
+//对象转map
+function objToMap(obj){
+	let strMap = new Map()
+	for(let k of Object.keys(obj)){
+		strMap.set(k, obj[k])
+	}
+	return strMap
+}
+
+//console.log(objToMap({yes:true, no:false}))
+
+//map转json
+//map转json要区分两种情况，一种是map的键名都是字符串，这时可以选择转为对象json
+function strMapToJson(strMap){
+	return JSON.stringify(strMapToObject(strMap))
+}
+let myMap2= new Map().set('yes', true).set('no', false)
+//console.log(strMapToJson(myMap2));
+
+//另一种情况是，map的键名有非字符串，这时可以选中转为数组JSON
+function mapToArrayJson(map){
+	return JSON.stringify([...map])
+}
+let myMap3 = new Map().set(true,7).set({foo:3},['abc']);
+//console.log(mapToArrayJson(myMap3))
+
+//JSON转为Map
+//JSON转为Map，正常情况下，所有键名都是字符串
+function jsonToStrMap(jsonStr){
+	return objToMap(JSON.parse(jsonStr));
+}
+
+//console.log(jsonToStrMap('{"yes":true, "no":false}'))
+function jsonToMap(jsonStr){
+	return new Map(JSON.parse(jsonStr));
+}
+
+//console.log(jsonToMap('[[true,7],[{"foo":3},["abc"]]]'));
+
+//WeakMap
+//wekMap与map解构相似
+
+const wm1 = new WeakMap()
+const key = {foo:1}
+wm1.set(key,2)
+//console.log(wm1.get(key))
+
+const k11 = [1,2,3]
+const k22 = [4,5,6]
+const wm2 = new WeakMap([[k11, 'foo'],[k22, 'bar']]);
+//console.log(wm2.get(k22));
+//console.log(wm2)
+
+//WeakMap与Map的区别有两点
+//首先WeakMap只接受对象所谓键名（null除外），不接受其他类的值作为键名
+const map12 = new WeakMap()
+//map12.set(1,2)
+//map12.set(Symbol(),2)
+//map12.set(null,2)	Invalid value used as weak map key    Invalid 无效的
+//其次，weakMap的键名所指向的对象，不计入垃圾回收机制
+//weakMap的设计目的在于，有时我们想在某个对象上存放一些数据，但是会形成对于这个对象的引用
+
+const e1 = document.getElementById('foo')
+const e2 = document.getElementById('bar')
+const arr5 = [
+	[e1, 'foo 元素'],
+	[e2, 'bar 元素']
+]
+
+const wm3 = new WeakMap();
+let key3 = {}
+let obj5 = {foo:1}
+
+wm3.set(key3, obj5)
+obj5 = null;
+//console.log(wm3.get(key3))
+//console.log(wm3);
+
+const _counter = new WeakMap();
+const _action = new WeakMap();
+
+class Countdown {
+	constructor(counter, action){
+		_counter.set(this, counter);
+		_action.set(this, action)
+	}
+	dec(){
+		let counter = _counter.get(this);
+		if(counter<1) return;
+		counter --;
+		_counter.set(this, counter);
+		if(counter === 0){
+			_action.get(this)()
+		}
+	}
+}
+
+var c = new Countdown(2, ()=>console.log('DONE'));
+c.dec()
+c.dec()
+//console.log(delete c);
+//console.log(_counter);
+//console.log(_action);
+//console.log(c)
+
+
+
+
+
