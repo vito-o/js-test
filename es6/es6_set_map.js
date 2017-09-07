@@ -104,12 +104,157 @@ let unique = [...new Set(arr2)]
 
 let set7 = new Set([1,2,3])
 set7 = new Set([...set7].map(x => x * 2))
-console.log(set7);
+//console.log(set7);
 
 let set8 = new Set([1,2,3,4,5])
 set8 = new Set([...set8].filter(x => (x%2)==0));
 //console.log((4%2)==0);
+ 
+//set很容易实现交集并集差集
+let a = new Set([1,2,3]);
+let b = new Set([4,3,2]);
+let unit = new Set([...a, ...b]);
+
+let intersect = new Set([...a].filter(x => b.has(x)))
+
+let defference = new Set([...a].filter(x => !b.has(x)))
+//console.log(unit);
+//console.log(intersect);
+//console.log(defference);
+
+/*
+改变set的原来set的结构
+*/
+let set9 = new Set([1,2,3])
+set9 = new Set([...set9].map(val => val * 2))
+//console.log(set9);
+
+let set10 = new Set([1,2,3]);
+set10 = new Set(Array.from(set10, val => val * 2))
+//console.log(set10);
 
 
+//weakSet
+//weakSet结构与set类似，也是不重复的值得集合。但是，它与set有两个区别。首先，weakset的成员只能是对象，而不能是其他类型的值
+const ws = new WeakSet();
+// ws.add(1)		报错	
+// ws.add(Symbol()) 报错
+
+/*
+WeakSet中的对象都是弱引用，及垃圾回收机制不考虑WeakSet对该对象的引用，也就是说，如果其他对象都不再引用该对象
+那么垃圾回收机制会自动回收该对象所占用的内存，不会考虑该对象还存在WeeakSet中
+这是因为垃圾回收机制依赖引用计数，如果一个值得引用次数不为0，那么垃圾回收机制就不会释放这块内存。结束使用
+该值之后，有时会忘记取消引用，导致内存无法释放，进而可能会引发内存泄露。WeakSet里面的引用，都不计入垃圾回收机制
+所以就不存在这个问题。因此，WeakSet适合临时存放一组对象，已经存放跟对象绑定的信息。只要这些对象在外部消失
+他在WeakSet里面的引用就会自动消失
+
+weakSet
+
+WeakSet是一个构造函数，可以使用new命令，创建weakset数据及结构
+作为构造函数，wekset可以接受一个数组或类似数组的对象作为参数。
+（实际上，任何具有iterable解构的对象，都可以作为weakset的参数）
+该数组的所有成员，都会自动成为weakset实例对象的成员
+*/
+
+const a1 = [[1,2],[3,4]]
+const ws1 = new WeakSet(a1);
+console.log(ws1);
+//a1数组的成员成为weakset的成员，而不是a数组本身。这一晚这，数组的声音只能是对象
+
+// const b1 = [3,4]
+// const ws2 = new WeakSet(b1) //invalid value used in weak set
+// console.log(ws2)
+
+/*
+WeakSet解构有以下三个方法
+WeakSet.prototype.add(value)//想WeakSet实例添加一个新成员
+WeakSet.prototype.delete(value)
+WeakSet.prototype.has(value)//返回一个布尔值，表示某个值是否存在
+*/
+
+const ws3 = new WeakSet();
+const obj = {}
+const foo = {}
+ws3.add(window)
+ws3.add(obj)
+ws3.has(window)
+ws3.has(foo)
+
+ws3.delete(window)
+ws3.has(window)
+
+//weakSet没有size属性，没有办法遍历他的成员
+
+//weakset的一个用处，是存储DOM节点，而不用担心这些节点从文档移除是，会发生内存泄露
+const foos = new WeakSet()
+class Foo{
+	constructor(){
+		foos.add(this)
+	}
+	method(){
+		if(!foos.has(this)){
+			throw new TypeError('Foo.prorotype.method 只能在Foo的实例上调用！')
+		}
+	}
+}
+
+//Foo.method.caller()
+
+/*
+map 的含义和基本用法
+js对象object，本质上是键值对的集合（Hash结构），但是传统上只能用字符串当做键
+map类似于对象，也是键值对的集合，但是‘键’的范围不限于字符串，各种类型的值都可以当做键。
+也就是说，Object结构提供了“字符串-值”的对应，map结构提供了“值-值”的对应，是一种更完善的HASH
+结构实现
+
+*/
+const data = {}
+const element = document.getElementById('myDiv')
+
+data[element] = 'metadata';
+//console.log(data['[object HTMLDivElement]'])
+
+const m = new Map();
+const o = {p:'Hello World'};
+m.set(o, 'content');
+// console.log(m)
+// console.log(m.get(o))
+// 
+// console.log(m.has(o))
+// console.log(m.delete(o))
+// console.log(m.has(o))
+// console.log(m)
+
+const map = new Map([
+	['name', '张三'],
+	['title', 'Author']
+])
+
+// console.log(map)
+// console.log(map.size)
+// console.log(map.has('name'))
+// console.log(map.get('name'))
+// console.log(map.has('title'))
+// console.log(map.get('title'))
+
+//Map构造函数结构数字作为参数，实际上执行的是下面的算法
+const item1 = [
+	['name', '张三'],
+	['title', 'Author']
+]
+
+const map1 = new Map();
+item1.forEach(([key,value]) => map1.set(key, value))
+//console.log(map1)
 
 
+const set11 = new Set([
+	['foo', 1],
+	['bar', 2]
+]);
+
+const m1 = new Map(set11)
+console.log(m1.get('foo'))
+const m2 = new Map([['bar',3]]);
+const m3 = new Map(m2);
+console.log(m3.get('bar'))
